@@ -104,9 +104,9 @@ function Header1({ navigationItems }: Header1Props) {
 
                 {/* Right-side Actions Section */}
                 <div className="flex justify-end w-full gap-4 items-center">
-                    <Button asChild>
+                    {/* <Button asChild>
                       <a href="/services">Inquire</a>
-                    </Button>
+                    </Button> */}
                     <ThemeToggle />
                 </div>
 
