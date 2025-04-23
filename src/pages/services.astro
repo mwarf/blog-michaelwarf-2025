@@ -1,0 +1,51 @@
+---
+// src/pages/services.astro
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { Button } from '@/components/ui/button.tsx'; // Import Button component
+
+const pageTitle = "Services";
+const pageDescription = "Learn about Michael Warf's speaking, consulting, and teaching engagements.";
+---
+<BaseLayout title={pageTitle} description={pageDescription}>
+  <div class="container mx-auto px-4 py-12 max-w-3xl"> {/* Centered container */}
+    <h1 class="text-4xl font-bold mb-8 text-center">{pageTitle}</h1>
+
+    <article class="prose dark:prose-invert max-w-none mb-12">
+      <p class="lead text-xl mb-6">
+        Leveraging over two decades of experience at the intersection of creativity, technology, and strategy, Michael Warf offers engaging speaking sessions, insightful consulting, and practical teaching workshops. Explore how Michael can help elevate your team or event.
+      </p>
+
+      <h2 class="text-3xl font-semibold mt-10 mb-4">Speaking Engagements</h2>
+      <p>
+        Michael delivers dynamic talks on topics including AI's impact on creative industries, documentary storytelling for brands, fostering innovation in small cities, and the future of digital media. Ideal for conferences, corporate events, and educational institutions.
+      </p>
+      {/* Placeholder for specific talk examples or topics */}
+
+      <h2 class="text-3xl font-semibold mt-10 mb-4">Consulting Services</h2>
+      <p>
+        Gain strategic insights and practical guidance on integrating AI into creative workflows, developing impactful video content strategies, and navigating the evolving digital landscape. Tailored consulting for businesses, non-profits, and creative teams.
+      </p>
+      {/* Placeholder for specific consulting areas */}
+
+      <h2 class="text-3xl font-semibold mt-10 mb-4">Teaching & Workshops</h2>
+      <p>
+        Engage your team or students with hands-on workshops focused on practical skills in video production, digital storytelling, AI tools for creatives, and web strategy. Customizable sessions designed for various skill levels.
+      </p>
+      {/* Placeholder for specific workshop topics */}
+
+    </article>
+
+    {/* Visual CTA Button */}
+    <div class="text-center">
+      <Button size="lg" asChild>
+        <a href="mailto:your-email@example.com?subject=Inquiry%20about%20Services"> {/* Placeholder mailto link */}
+          Inquire About Services
+        </a>
+      </Button>
+      <p class="text-sm text-muted-foreground mt-4">
+        Let's discuss how Michael can contribute to your next project or event.
+      </p>
+    </div>
+
+  </div>
+</BaseLayout>

@@ -1,0 +1,157 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from './BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'; // Import Card components
+import SocialShareButtons from '@/components/SocialShareButtons.astro';
+import { AuthorBio } from '@/components/AuthorBio.tsx'; // Correct import for React component
+
+const { frontmatter, slug } = Astro.props; // Get slug from props
+
+// Fetch all posts to find related ones
+const allPosts = (await getCollection('blog'))
+  .filter((post) => !post.data.draft && post.slug !== slug); // Exclude drafts and self
+
+// Find related posts based on shared tags
+const relatedPosts = allPosts.filter(post =>
+  post.data.tags?.some(tag => frontmatter.tags?.includes(tag))
+)
+.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()) // Sort by date
+.slice(0, 3); // Limit to 3 related posts
+---
+
+<BaseLayout title={frontmatter.title} description={frontmatter.description}>
+  <article class="max-w-3xl mx-auto px-4 py-8">
+    <header class="mb-12">
+      <h1 class="text-4xl font-bold mb-4">{frontmatter.title}</h1>
+      <div class="text-sm text-gray-600 dark:text-gray-400">
+        <time datetime={frontmatter.pubDate.toISOString()}>
+          {new Date(frontmatter.pubDate).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          })}
+        </time>
+        {frontmatter.author && <span class="ml-4">by {frontmatter.author}</span>}
+      </div>
+      {/* Category and Tags Section */}
+      <div class="mt-4 flex flex-wrap gap-2 items-center text-sm">
+        {frontmatter.category && (
+          <span class="bg-secondary text-secondary-foreground px-2 py-0.5 rounded-md font-medium">
+            Category: {frontmatter.category}
+          </span>
+        )}
+        {frontmatter.tags && frontmatter.tags.length > 0 && (
+          <div class="flex flex-wrap gap-1 items-center">
+            <span class="font-medium mr-1">Tags:</span>
+            {frontmatter.tags.map((tag: string) => (
+              <a href={`/tag/${tag}/`} class="bg-muted text-muted-foreground px-2 py-0.5 rounded-md text-xs hover:bg-primary hover:text-primary-foreground transition-colors">
+                {tag}
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
+    </header>
+
+    {/* Render the hero image if available */}
+    {frontmatter.heroImage && (
+      <div class="mb-12 -mx-4 sm:mx-0">
+        <Image
+          src={frontmatter.heroImage}
+          alt={frontmatter.heroImageAlt || frontmatter.title}
+          class="w-full h-auto rounded-lg shadow-md object-cover aspect-video"
+        />
+      </div>
+    )}
+
+    {/* Main Content */}
+    <div class="prose dark:prose-invert lg:prose-lg max-w-none">
+      <slot />
+    </div>
+
+    {/* Social Share Buttons */}
+    <div class="mt-12 border-t pt-8 dark:border-gray-800">
+       <SocialShareButtons url={Astro.url} title={frontmatter.title} />
+    </div>
+
+    {/* Author Bio Component */}
+    {frontmatter.author && frontmatter.authorBio && (
+      <AuthorBio
+        client:visible
+        className="mt-12"
+        author={frontmatter.author}
+        authorBio={frontmatter.authorBio}
+        authorImage={frontmatter.authorImage}
+        linkedinUrl={frontmatter.linkedinUrl}
+        // Removed twitterUrl
+        instagramUrl={frontmatter.instagramUrl}
+        youtubeUrl={frontmatter.youtubeUrl} // Added youtubeUrl
+      />
+    )}
+
+    {/* Back to Blog Link */}
+    <div class="mt-12 border-t pt-8 dark:border-gray-800">
+      <a href="/blog" class="text-primary hover:underline">← Back to Blog</a>
+    </div>
+
+    {/* Related Posts Section */}
+    {relatedPosts.length > 0 && (
+      <section class="mt-16 border-t pt-8 dark:border-gray-800">
+        <h2 class="text-2xl font-bold mb-6 text-center">Related Posts</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {relatedPosts.map((post) => (
+            <Card className="h-full flex flex-col overflow-hidden transition-all duration-200 ease-in-out hover:shadow-lg border dark:border-gray-800 rounded-lg">
+              {post.data.heroImage && (
+                <a href={`/blog/${post.slug}/`} aria-label={`Read more about ${post.data.title}`} class="group">
+                  <div class="aspect-video overflow-hidden">
+                    <img
+                      src={post.data.heroImage.src}
+                      alt={post.data.heroImageAlt || post.data.title}
+                      class="w-full h-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+                      loading="lazy"
+                      decoding="async"
+                      width={post.data.heroImage.width}
+                      height={post.data.heroImage.height}
+                    />
+                  </div>
+                </a>
+              )}
+              <CardHeader>
+                 <span class="inline-block bg-primary/10 text-primary dark:bg-primary dark:text-primary-foreground text-xs font-medium px-2.5 py-0.5 rounded mb-2">
+                  {post.data.category}
+                </span>
+                <a href={`/blog/${post.slug}/`} class="hover:underline">
+                  <CardTitle>{post.data.title}</CardTitle>
+                </a>
+              </CardHeader>
+              <CardContent className="flex-grow flex flex-col justify-between">
+                <div>
+                  <CardDescription className="mb-4 text-sm">{post.data.description}</CardDescription>
+                </div>
+                <div class="mt-auto border-t pt-3 flex justify-between items-center">
+                  <time class="text-xs text-gray-600 dark:text-muted-foreground" datetime={post.data.pubDate.toISOString()}>
+                    {new Date(post.data.pubDate).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric'
+                    })}
+                  </time>
+                  <a href={`/blog/${post.slug}/`} class="text-xs text-primary hover:underline font-medium group">
+                    Read More <span class="inline-block transition-transform duration-300 ease-in-out group-hover:translate-x-1">→</span>
+                  </a>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
+    )}
+  </article> {/* Ensure article tag is closed */}
+</BaseLayout>

@@ -1,0 +1,110 @@
+---
+// src/pages/tag/[tag].astro
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'; // Reuse Shadcn Card components
+
+// Generate static paths for each tag
+export async function getStaticPaths() {
+  const allPosts = await getCollection('blog', ({ data }) => !data.draft); // Filter drafts
+  const uniqueTags = [...new Set(allPosts.flatMap((post) => post.data.tags || []))]; // Flatten tags and get unique ones
+
+  return uniqueTags.map((tag) => {
+    // Filter posts that include the current tag
+    const filteredPosts = allPosts.filter((post) => post.data.tags?.includes(tag));
+    return {
+      params: { tag: tag }, // The dynamic segment value
+      props: { posts: filteredPosts, tagName: tag }, // Pass filtered posts and tag name to the page
+    };
+  });
+}
+
+interface Props {
+  posts: CollectionEntry<'blog'>[];
+  tagName: string;
+}
+
+const { posts, tagName } = Astro.props;
+
+// Sort posts by date (newest first) - optional but good practice
+const sortedPosts = posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+---
+
+<BaseLayout title={`Tag: ${tagName}`} description={`Posts tagged with ${tagName}`}>
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    <h1 class="text-4xl font-bold mb-8 text-center">
+      Tag: <span class="text-primary">{tagName}</span>
+    </h1>
+
+    {/* Reuse the grid layout */}
+    {sortedPosts.length > 0 ? (
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {sortedPosts.map((post) => (
+          <Card className="h-full flex flex-col overflow-hidden transition-all duration-200 ease-in-out hover:shadow-lg border dark:border-gray-800 rounded-lg">
+            {post.data.heroImage && (
+              <a href={`/blog/${post.slug}/`} aria-label={`Read more about ${post.data.title}`} class="group">
+                <div class="aspect-video overflow-hidden">
+                  <img
+                    src={post.data.heroImage.src}
+                    alt={post.data.heroImageAlt || post.data.title}
+                    class="w-full h-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+                    loading="lazy"
+                    decoding="async"
+                    width={post.data.heroImage.width}
+                    height={post.data.heroImage.height}
+                  />
+                </div>
+              </a>
+            )}
+            <CardHeader>
+               {/* Display Category */}
+               <span class="inline-block bg-primary/10 text-primary dark:bg-primary dark:text-primary-foreground text-xs font-medium px-2.5 py-0.5 rounded mb-2">
+                {post.data.category}
+              </span>
+              {/* Link the title */}
+              <a href={`/blog/${post.slug}/`} class="hover:underline">
+                <CardTitle>{post.data.title}</CardTitle>
+              </a>
+            </CardHeader>
+            <CardContent className="flex-grow flex flex-col justify-between">
+              <div>
+                <CardDescription className="mb-4">{post.data.description}</CardDescription>
+                {/* Display Tags */}
+                {post.data.tags && post.data.tags.length > 0 && (
+                  <div class="flex flex-wrap gap-1 mb-4">
+                    {post.data.tags.map((tag) => (
+                      <span class={`inline-block text-xs font-medium px-2 py-0.5 rounded ${tag === tagName ? 'bg-primary text-primary-foreground' : 'bg-secondary/10 text-secondary-foreground dark:bg-secondary dark:text-secondary-foreground'}`}>
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div class="mt-auto border-t pt-4 flex justify-between items-center">
+                <time class="text-sm text-gray-600 dark:text-muted-foreground" datetime={post.data.pubDate.toISOString()}>
+                  {new Date(post.data.pubDate).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </time>
+                <a href={`/blog/${post.slug}/`} class="text-sm text-primary hover:underline font-medium group">
+                  Read More <span class="inline-block transition-transform duration-300 ease-in-out group-hover:translate-x-1">→</span>
+                </a>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    ) : (
+      <p class="text-center text-muted-foreground mt-12">No posts found with the tag "{tagName}".</p>
+    )}
+  </main>
+</BaseLayout>

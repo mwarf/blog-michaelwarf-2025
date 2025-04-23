@@ -1,0 +1,65 @@
+---
+// src/components/AuthorBio.astro
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"; // Import Shadcn Avatar
+import { Linkedin, Twitter, Instagram } from 'lucide-react'; // Import icons
+
+interface Props {
+  author: string;
+  authorBio: string;
+  authorImage?: string; // Optional image URL
+  linkedinUrl?: string;
+  twitterUrl?: string;
+  instagramUrl?: string;
+  className?: string;
+}
+
+const {
+  author,
+  authorBio,
+  authorImage,
+  linkedinUrl,
+  twitterUrl,
+  instagramUrl,
+  className
+} = Astro.props;
+
+// Get initials for Avatar fallback
+const initials = author
+  .split(' ')
+  .map(name => name[0])
+  .slice(0, 2)
+  .join('');
+
+const iconClass = "h-5 w-5 text-muted-foreground hover:text-foreground transition-colors";
+---
+
+<div class:list={["flex items-start gap-4 border-t pt-8 dark:border-gray-800", className]}>
+  <Avatar className="h-16 w-16"> {/* Larger avatar */}
+    {authorImage && <AvatarImage src={authorImage} alt={author} />}
+    <AvatarFallback>{initials}</AvatarFallback>
+  </Avatar>
+  <div class="flex-1">
+    <h3 class="text-xl font-semibold mb-1">{author}</h3>
+    <div class="prose prose-sm dark:prose-invert max-w-none whitespace-pre-line mb-3">
+      {authorBio}
+    </div>
+    {/* Social Links */}
+    <div class="flex items-center gap-3">
+      {linkedinUrl && (
+        <a href={linkedinUrl} target="_blank" rel="noopener noreferrer" aria-label={`${author} on LinkedIn`}>
+          <Linkedin className={iconClass} />
+        </a>
+      )}
+      {twitterUrl && (
+        <a href={twitterUrl} target="_blank" rel="noopener noreferrer" aria-label={`${author} on Twitter`}>
+          <Twitter className={iconClass} />
+        </a>
+      )}
+      {instagramUrl && (
+        <a href={instagramUrl} target="_blank" rel="noopener noreferrer" aria-label={`${author} on Instagram`}>
+          <Instagram className={iconClass} />
+        </a>
+      )}
+    </div>
+  </div>
+</div>

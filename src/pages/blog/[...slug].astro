@@ -1,0 +1,25 @@
+---
+// src/pages/blog/[...slug].astro
+import BlogLayout from '../../layouts/BlogLayout.astro';
+import { getCollection } from 'astro:content';
+import { MDX } from '../../components/mdx-components.tsx';
+import type { BlogPost } from '../../content/config'; // Use the manual BlogPost type
+
+export async function getStaticPaths() {
+  // Use 'blog' directly. The manual type should help TS.
+  const posts = await getCollection('blog');
+  return posts.map((post: BlogPost) => ({ // Add explicit type to map parameter
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+// Type the props correctly using the imported BlogPost
+const { post } = Astro.props as { post: BlogPost };
+// Render the content
+const { Content } = await post.render();
+---
+
+<BlogLayout frontmatter={post.data}>
+  <Content components={MDX} />
+</BlogLayout>

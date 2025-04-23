@@ -1,0 +1,125 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { buttonVariants } from "@/components/ui/button";
+import { getCollection } from "astro:content";
+
+// Fetch the 3 most recent blog posts
+const recentPosts = (await getCollection('blog'))
+  .filter((post) => !post.data.draft)
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+  .slice(0, 3);
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'; // Import Card components
+---
+
+<BaseLayout
+  title="Michael Warf - Thought Leadership"
+  description="Insights on AI, Video Production, and Creative Innovation."
+>
+  {/* Hero Section */}
+  <section class="container grid items-center gap-6 pt-12 pb-12 md:py-20 text-center"> {/* Centered text */}
+    <div class="flex flex-col items-center gap-4"> {/* Centered items */}
+      <h1
+        class="text-4xl leading-tight font-extrabold tracking-tighter md:text-5xl lg:text-6xl"
+      >
+        Exploring the Intersection of <br class="hidden sm:inline" />
+        Creativity, Technology & Strategy
+      </h1>
+      <p class="text-muted-foreground max-w-[700px] text-lg md:text-xl">
+        Insights from Michael Warf on AI, video production, documentary storytelling, and building a creative legacy.
+      </p>
+    </div>
+    <div class="flex justify-center gap-4"> {/* Centered buttons */}
+      <a
+        href="/blog"
+        class={buttonVariants({ size: "lg" })}
+      >
+        Read the Blog
+      </a>
+      <a
+        href="/about"
+        class={buttonVariants({ variant: 'outline', size: "lg" })}
+      >
+        About Michael
+      </a>
+    </div>
+  </section>
+
+  {/* Recent Posts Section */}
+  <section class="container py-8 md:py-12">
+    <h2 class="text-3xl font-bold text-center mb-8">Recent Posts</h2>
+    {recentPosts.length > 0 ? (
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {recentPosts.map((post) => (
+          <Card className="h-full flex flex-col overflow-hidden transition-all duration-200 ease-in-out hover:shadow-lg border dark:border-gray-800 rounded-lg">
+            {post.data.heroImage && (
+              <a href={`/blog/${post.slug}/`} aria-label={`Read more about ${post.data.title}`} class="group">
+                <div class="aspect-video overflow-hidden">
+                  {/* Using standard img tag for simplicity on homepage */}
+                  <img
+                    src={post.data.heroImage.src}
+                    alt={post.data.heroImageAlt || post.data.title}
+                    class="w-full h-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+                    loading="lazy"
+                    decoding="async"
+                    width={post.data.heroImage.width}
+                    height={post.data.heroImage.height}
+                  />
+                </div>
+              </a>
+            )}
+            <CardHeader>
+               <span class="inline-block bg-primary/10 text-primary dark:bg-primary dark:text-primary-foreground text-xs font-medium px-2.5 py-0.5 rounded mb-2">
+                {post.data.category}
+              </span>
+              <a href={`/blog/${post.slug}/`} class="hover:underline">
+                <CardTitle>{post.data.title}</CardTitle>
+              </a>
+            </CardHeader>
+            <CardContent className="flex-grow flex flex-col justify-between">
+              <div>
+                <CardDescription className="mb-4">{post.data.description}</CardDescription>
+                {/* Optionally display tags */}
+                {/* {post.data.tags && post.data.tags.length > 0 && (
+                  <div class="flex flex-wrap gap-1 mb-4">
+                    {post.data.tags.map((tag) => (
+                      <span class="inline-block bg-secondary/10 text-secondary-foreground dark:bg-secondary dark:text-secondary-foreground text-xs font-medium px-2 py-0.5 rounded">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )} */}
+              </div>
+              <div class="mt-auto border-t pt-4 flex justify-between items-center">
+                <time class="text-sm text-gray-600 dark:text-muted-foreground" datetime={post.data.pubDate.toISOString()}>
+                  {new Date(post.data.pubDate).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </time>
+                <a href={`/blog/${post.slug}/`} class="text-sm text-primary hover:underline font-medium group">
+                  Read More <span class="inline-block transition-transform duration-300 ease-in-out group-hover:translate-x-1">→</span>
+                </a>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+       <div class="text-center mt-12">
+         <a href="/blog" class={buttonVariants({ variant: "outline" })}>
+           View All Posts
+         </a>
+       </div>
+    ) : (
+      <p class="text-center text-muted-foreground mt-12">No recent posts found.</p>
+    )}
+  </section>
+
+</BaseLayout>

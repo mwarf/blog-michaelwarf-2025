@@ -1,0 +1,44 @@
+---
+// src/pages/blog/index.astro
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { BlogFilterControls } from '@/components/ui/BlogFilterControls'; // Import the new component
+
+// Use 'blog' directly, filter and sort
+const posts = (await getCollection('blog'))
+  .filter((post) => !post.data.draft)
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+
+// Extract unique categories
+const uniqueCategories = [...new Set(posts.map(post => post.data.category).filter(Boolean))].sort(); // Filter out undefined/null and sort
+
+// Calculate tag frequencies
+const allTags = posts.flatMap(post => post.data.tags || []);
+const tagCounts = allTags.reduce((acc, tag) => {
+  acc[tag] = (acc[tag] || 0) + 1;
+  return acc;
+}, {} as Record<string, number>);
+
+// Sort unique tags by frequency (descending), then alphabetically
+const uniqueTags = [...new Set(allTags)].sort((a, b) => {
+  const countDiff = tagCounts[b] - tagCounts[a];
+  if (countDiff !== 0) {
+    return countDiff; // Sort by frequency descending
+  }
+  return a.localeCompare(b); // Sort alphabetically if frequencies are equal
+});
+---
+
+<BaseLayout title="Blog" description="Latest articles and updates">
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    <h1 class="text-4xl font-bold mb-8 text-center">Blog</h1>
+
+    {/* Render the filter controls and pass data */}
+    <BlogFilterControls
+      client:load
+      posts={posts}
+      uniqueCategories={uniqueCategories}
+      uniqueTags={uniqueTags}
+    />
+  </main>
+</BaseLayout>

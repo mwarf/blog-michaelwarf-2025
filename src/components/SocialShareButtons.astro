@@ -1,0 +1,52 @@
+---
+// src/components/SocialShareButtons.astro
+import { Twitter, Linkedin } from 'lucide-react'; // Using lucide icons
+
+interface Props {
+  url: URL | string; // URL of the page to share
+  title: string;     // Title of the page/post
+  className?: string; // Optional class for the container
+}
+
+const { url, title, className } = Astro.props;
+
+// Ensure URL is absolute
+const shareUrl = new URL(url, Astro.site).href;
+const encodedUrl = encodeURIComponent(shareUrl);
+const encodedTitle = encodeURIComponent(title);
+
+// Construct share URLs
+const twitterUrl = `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`;
+const linkedinUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
+// Add more platforms as needed (Facebook, Email, etc.)
+
+const baseButtonClass = "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 w-10"; // Base button style (like Shadcn icon button)
+const hoverBgClass = "hover:bg-accent hover:text-accent-foreground"; // Hover effect
+---
+
+<div class:list={["flex items-center gap-2", className]}>
+  <span class="text-sm font-medium mr-2">Share:</span>
+  {/* Twitter Button */}
+  <a
+    href={twitterUrl}
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Share on Twitter"
+    class:list={[baseButtonClass, hoverBgClass]}
+  >
+    <Twitter className="h-4 w-4" />
+  </a>
+
+  {/* LinkedIn Button */}
+  <a
+    href={linkedinUrl}
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Share on LinkedIn"
+    class:list={[baseButtonClass, hoverBgClass]}
+  >
+    <Linkedin className="h-4 w-4" />
+  </a>
+
+  {/* Add more buttons here */}
+</div>

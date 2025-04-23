@@ -1,0 +1,52 @@
+---
+// About page for Michael Warf
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { AuthorBio } from '@/components/AuthorBio.tsx'; // Import the React component
+
+const pageTitle = "About Michael Warf";
+const pageDescription = "Learn more about Michael Warf.";
+
+// Define Author details here for the About page
+const authorName = "Michael Warf";
+const authorBioText = "Storyteller at heart with a passion for bringing ideas to life through video, photography, and digital strategy. Based in Lethbridge, Alberta, with over two decades of experience in web design, development, management, and education.";
+// TODO: Add actual image and social URLs
+const authorImageUrl = undefined; // e.g., "/images/michael-warf.jpg";
+const linkedinUrl = "https://www.linkedin.com/in/mwarf/ "; // Corrected URL
+// const twitterUrl = "https://x.com/raymethula"; // Removed Twitter
+const instagramUrl = "https://www.instagram.com/warfeous"; // Added Instagram URL
+const youtubeUrl = "https://www.youtube.com/@Warfeous"; // Added YouTube URL
+---
+<BaseLayout title={pageTitle} description={pageDescription}>
+  <div class="max-w-3xl mx-auto px-4 py-8"> {/* Centering container */}
+    <h1 class="text-4xl font-bold mb-8 text-center">{pageTitle}</h1>
+
+    {/* Render AuthorBio React component with client:load */}
+    <AuthorBio
+      client:load
+      className="mb-12"
+      author={authorName}
+      authorBio={authorBioText}
+      authorImage={authorImageUrl}
+      linkedinUrl={linkedinUrl}
+      instagramUrl={instagramUrl}
+      youtubeUrl={youtubeUrl}
+    />
+
+    {/* Keep the rest of the content */}
+    <article class="prose dark:prose-invert max-w-none">
+      {/* Removed the introductory paragraph as it's now in the AuthorBio */}
+      <h2>Educator</h2>
+    <p>My journey as an educator has been a cornerstone of my career. I’ve had the privilege of teaching and mentoring students, sharing my knowledge and passion for digital storytelling. My time at the University of Lethbridge was particularly impactful, where I led the internal web team and managed CMS migrations. This experience not only sharpened my technical skills but also taught me the power of collaboration and innovation in shaping minds and projects alike.</p>
+
+    <h2>Creative</h2>
+    <p>As a creative, I thrive on capturing and sharing stories. My work in video production and photography has been featured in local news outlets like CBC, and I’m proud to contribute to Lethbridge’s vibrant creative community. Whether it’s crafting documentary-style corporate videos or snapping candid photography, I aim to bring a fresh, unique perspective to every project.</p>
+
+    <h2>Entrepreneur</h2>
+    <p>Entrepreneurship has been a defining chapter in my story. Founding Coalbanks Creative was a dream realized—a chance to lead a team dedicated to producing high-quality content that reflects our clients’ narratives. This venture has taught me adaptability, resilience, and the importance of a clear, compelling vision.</p>
+
+    <h2>A Tapestry of Experience</h2>
+    <p>While my time at the University of Lethbridge was significant, I believe my true value lies in the diversity of roles I’ve embraced over the years. Each chapter—educator, creative, entrepreneur—has woven together a rich tapestry of skills and insights, shaping me into the versatile storyteller I am today. I’m excited to share my journey, lessons learned, and expertise through this blog, hoping to inspire fellow creatives, business owners, or anyone curious about the world of digital storytelling.</p>
+    <p>Feel free to explore my posts or connect with me on social media—let’s start a conversation!</p>
+    </article>
+  </div>
+</BaseLayout>
