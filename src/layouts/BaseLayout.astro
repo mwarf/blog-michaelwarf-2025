@@ -6,7 +6,7 @@ import { Header1 } from "@/components/ui/Header1.tsx";
 import { Footer } from "@/components/ui/Footer.tsx"; // Import the new React Footer
 import type { FooterProps } from "@/components/ui/Footer.tsx"; // Import FooterProps type
 // Import icons from lucide-react and the dedicated .tsx file
-import { Home, Newspaper, User, Linkedin, Instagram, Youtube } from "lucide-react"; // Added Youtube, removed Twitter.
+import { Home, Newspaper, User, Linkedin, Instagram, Youtube, ExternalLink } from "lucide-react"; // Added Youtube, removed Twitter. Added ExternalLink
 import {
   Blocks, // Keep existing icons if needed elsewhere, or remove if unused
   CodeXml, // Keep existing icons if needed elsewhere, or remove if unused
@@ -132,6 +132,29 @@ const navigationItems = [
                 name: "About",
                 Icon: User, // Use imported icon
                 href: "/about",
+              },
+            ],
+          },
+          {
+            title: "Coalbanks Websites",
+            links: [
+              {
+                name: "coalbanks.com",
+                Icon: ExternalLink,
+                href: "https://coalbanks.com",
+                description: "Crafting compelling brand stories through cinematic documentary-style video production.",
+              },
+              {
+                name: "lethbridgedrone.com",
+                Icon: ExternalLink,
+                href: "https://lethbridgedrone.com",
+                description: "Elevate your perspective with professional drone videography and photography services.",
+              },
+              {
+                name: "brainmuffin.ca",
+                Icon: ExternalLink,
+                href: "https://brainmuffin.ca",
+                description: "Unlock the future of creativity with expert AI integration and VFX consulting.",
               },
             ],
           },
